@@ -5,10 +5,11 @@ import {
   BackgroundGeolocationResponse,
   BackgroundGeolocationEvents,
   ServiceStatus,
-  BackgroundGeolocationAuthorizationStatus
+  BackgroundGeolocationAuthorizationStatus,
+  BackgroundGeolocationCurrentPositionConfig
   }
   from '@ionic-native/background-geolocation/ngx';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { SignalModel } from '../model/signal.model';
 
 
@@ -101,7 +102,22 @@ export class LocationService {
     return this.backgroundGeolocation.configure(config);
   }
 
-  last():Promise<BackgroundGeolocationResponse>{
-    return this.backgroundGeolocation.getCurrentLocation();
+  currentPosition(){
+    let currentPositionConfig: BackgroundGeolocationCurrentPositionConfig = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+
+    this.backgroundGeolocation.getCurrentLocation(currentPositionConfig).then((response)=>{
+      console.log("foreground latitude " + response.latitude)
+      console.log("foreground longitude " + response.longitude)
+      let signal:SignalModel = new SignalModel(response.latitude, response.longitude);
+      this.lastLocationSubject.next(signal);
+      
+    }).catch((error)=>{
+      console.log("**** error " +JSON.stringify(error));
+      this.lastLocationSubject.next(null);
+    });
   }
 }

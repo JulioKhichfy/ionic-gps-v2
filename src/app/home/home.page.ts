@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BackgroundGeolocationResponse } from '@ionic-native/background-geolocation/ngx';
 import { SignalModel } from '../model/signal.model';
 import { LocationService } from '../services/location.service';
 
@@ -12,16 +11,16 @@ export class HomePage implements OnInit, OnDestroy{
   
   locations:any
   public signal:SignalModel;
-  latitude:number=0;
-  longitude:number=0;
-
+ 
   constructor(public locationService:LocationService) {
     this.locations = [];
   }
 
   ngOnInit(): void {
     this.locationService.lastLocationSubject.subscribe((signal:SignalModel)=>{
-      this.signal = signal;
+      if(signal != null) {
+        this.signal = new SignalModel(signal.latitude, signal.longitude);
+      }
     })
   }
 
@@ -30,7 +29,7 @@ export class HomePage implements OnInit, OnDestroy{
   }
 
   startForegroundTracking(){
-    this.locationService.start();
+    this.locationService.currentPosition();
   }
 
   stopBackgroundTracking(){
