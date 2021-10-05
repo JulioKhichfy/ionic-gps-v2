@@ -1,29 +1,40 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-        Background Geolocation
+        Geolocation
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
-  <ion-button (click)="startBackgroundTracking()" expand="full">
-    Iniciar Background Tracking
+ 
+  
+  <ion-button (click)="startForegroundTracking()" expand="full">
+    Iniciar Tracking
   </ion-button> <br />
 
-  <ion-button (click)="stopBackgroundTracking()" expand="full">
+  <ion-label>
+    Latitude:
+  </ion-label>
+  <ion-badge color="danger" slot="end">{{signal?.latitude}}</ion-badge>
+  <br />
+  <ion-label>
+    Longitude:
+  </ion-label>
+  <ion-badge color="danger" slot="end">{{signal?.longitude}}</ion-badge>
+  <!--ion-button (click)="stopBackgroundTracking()" expand="full">
     Parar Background Tracking
-  </ion-button> <br />
+  </!--ion-button> <br /-->
 
-  <ion-button (click)="getLocations()" expand="full">
+  <!--ion-button (click)="getLocations()" expand="full">
     Visualizar sua Localização
-  </ion-button> <br />
+  </!--ion-button> <br /-->
 
-  <ion-button (click)="clearLocations()" expand="full">
+  <!--ion-button (click)="clearLocations()" expand="full">
     Limpar dados de Localização
-  </ion-button> <br />
+  </!--ion-button> <br / -->
 
-  <ion-list *ngFor="let location of locations">
+  <!--ion-list *ngFor="let location of locations">
     <ion-item>
       <ion-label>
         Latitude:
@@ -48,6 +59,6 @@
       </ion-label>
       <ion-badge color="danger" slot="end">{{location.time}}</ion-badge>
     </ion-item>
-  </ion-list>    
+  </!--ion-list -->    
   
 </ion-content>

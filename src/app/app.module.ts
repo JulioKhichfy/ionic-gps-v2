@@ -7,6 +7,8 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx';
+import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
+import { LocationService } from './services/location.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -14,7 +16,9 @@ import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    BackgroundGeolocation
+    BackgroundGeolocation,
+    AndroidPermissions,
+    LocationService
   ],
   bootstrap: [AppComponent],
 })

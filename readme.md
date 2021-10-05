@@ -10,6 +10,9 @@
 - npm install @ionic-native/background-geolocation
 - npm install @ionic-native/core
 
+- ionic cordova plugin add cordova-plugin-android-permissions
+- npm install @ionic-native/android-permissions
+
 ##### EXTENSIONS INSTALLED - visual code studio 1.60.2
 - Cordova Tools v2.3.0
 - ADB Interface for VSCode v0.22.1

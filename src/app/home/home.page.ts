@@ -1,33 +1,48 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BackgroundGeolocationResponse } from '@ionic-native/background-geolocation/ngx';
+import { SignalModel } from '../model/signal.model';
+import { LocationService } from '../services/location.service';
 
-declare var window
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit, OnDestroy{
   
   locations:any
+  public signal:SignalModel;
+  latitude:number=0;
+  longitude:number=0;
 
-  constructor() {
+  constructor(public locationService:LocationService) {
     this.locations = [];
   }
 
-  startBackgroundTracking(){
-    window.app.backgroundGeolocation.start();
+  ngOnInit(): void {
+    this.locationService.lastLocationSubject.subscribe((signal:SignalModel)=>{
+      this.signal = signal;
+    })
+  }
+
+  ngOnDestroy(): void {
+    
+  }
+
+  startForegroundTracking(){
+    this.locationService.start();
   }
 
   stopBackgroundTracking(){
-    window.app.backgroundGeolocation.stop();
+    this.locationService.stop();
   }
 
-  getLocations(){
+  /*getLocations(){
     this.locations = (JSON.parse(localStorage.getItem("location")) == null) ? [] : JSON.parse(localStorage.getItem("location"));
-  }
+  }*/
 
-  clearLocations(){
+  /*clearLocations(){
     localStorage.removeItem("location");
-  }
+  }*/
   
 }
