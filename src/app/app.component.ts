@@ -1,69 +1,78 @@
-import { Component } from '@angular/core';
-import { BackgroundGeolocationConfig, BackgroundGeolocationResponse } from '@ionic-native/background-geolocation/ngx';
-
+import { Component, OnInit } from '@angular/core';
+import {
+  BackgroundGeolocation,
+  BackgroundGeolocationConfig,
+  BackgroundGeolocationResponse,
+  BackgroundGeolocationEvents}
+  from '@ionic-native/background-geolocation/ngx';
 import { Platform } from '@ionic/angular';
+import { Subject } from 'rxjs';
 import { SignalModel } from './model/signal.model';
 
-import { LocationService } from './services/location.service';
-
-
-const configBG: BackgroundGeolocationConfig = {
-  desiredAccuracy: 0,
-  stationaryRadius: 1,
-  distanceFilter: 1,
-  debug: true, 
-  interval:10000,
-  startForeground:false
-}
-
+declare var window;
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
+  arr:any;
+  signal:SignalModel;
+  signalSubject:Subject<any>;
+  
+  constructor(private platform: Platform,
+    private backgroundGeolocation: BackgroundGeolocation) {
+      this.arr = [];
+      this.signalSubject = new Subject();
+      this.signal = new SignalModel(0,0,0,new Date().getTime())
+    }
+  
+    ngOnInit(): void {
+      this.initializeApp();
+    }
 
-  constructor(private platform: Platform, private locationService:LocationService) {
-    this.initializeApp();
-  }
+    async initializeApp() {
+      await this.platform.ready();
+      this.configure();
+      try{
+        localStorage.removeItem("location");
+      }catch(err){
+        console.log("Garante a limpeza do cache no inicio");
+      }
+    }
+ 
+    async configure(){
+      const config: BackgroundGeolocationConfig = {
+        desiredAccuracy: 0,
+        stationaryRadius: 10,
+        distanceFilter: 10,
+        interval:10000,
+        activitiesInterval: 10000,
+        debug: false, 
+        stopOnTerminate: false,
+        startForeground:true
+      }
 
-  initializeApp() {
-    this.platform.ready().then(() => {
-      this.subscribeFG();
-      this.subscribeBG();
-    });
-  }
+      await this.backgroundGeolocation.configure(config).then(()=>{
+        this.backgroundGeolocation.on(BackgroundGeolocationEvents.location).subscribe(
+          (location:BackgroundGeolocationResponse) => {
+            this.signal.latitude  = location.latitude;
+            this.signal.longitude = location.longitude;
+            this.signal.speed = location.speed;
+            this.signal.time = location.time;
 
-  subscribeFG(){
-    this.locationService.foreground().subscribe(()=>{
-      console.log("configFG foreground OK");
-      this.getCurrentPosition();
-    });
-  }
-
-  getCurrentPosition(){
-    this.locationService.stop();
-    this.locationService.currentPosition();
-    
-  }
-
-  subscribeBG(){
-    this.subscribeLocation();
-    this.locationService.background().subscribe((result:BackgroundGeolocationResponse)=>{
-      console.log("background");
-      this.locationService.configure(configBG).then((result)=>{
-        if(result === "OK"){
-          console.log("configBG background OK");
-          this.locationService.start();
-        }
+            var locationStr = localStorage.getItem("location");
+            if(locationStr == null){
+              this.arr.push(this.signal)
+            } else {
+              var locationarr = JSON.parse(locationStr);
+              this.arr = locationarr;
+              this.arr.push(this.signal);
+            }
+            localStorage.setItem("location", JSON.stringify(this.arr));
+            this.signalSubject.next(this.signal);
+        });
       });
-    });
-  }
-
-  subscribeLocation(){
-    this.locationService.location().subscribe((location:BackgroundGeolocationResponse) => {
-      console.log("background latitude " + location.latitude);
-      console.log("background longitude " + location.longitude);
-    });
-  }
+      window.app = this;
+    }
 }

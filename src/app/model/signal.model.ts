@@ -2,9 +2,13 @@ export class SignalModel {
 
     latitude:number;
     longitude:number;
+    speed:number;
+    time:number;
 
-    constructor(lat, long){
-        this.latitude = lat;
-        this.longitude = long;
+    constructor(latitude, longitude, speed, time){
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.speed = speed;
+        this.time = time;
     }
 }
